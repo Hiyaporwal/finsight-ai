@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero py-5">
+  <div class="container py-lg-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge badge-soft mb-3">Educational project &middot; Experimental forecasts</span>
+        <h1 class="display-5 fw-bold mb-3">Your AI-Powered Financial Analyst for the Indian Stock Market.</h1>
+        <p class="lead text-muted-light mb-4">
+          FinSight AI combines stock forecasting, financial analysis, deep learning and AI-generated
+          insights for NSE-listed companies in one place.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ url_for('auth.signup') }}" class="btn btn-accent btn-lg">Get Started</a>
+          <a href="#markets" class="btn btn-outline-light btn-lg">Explore Markets</a>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="preview-card p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small text-muted-light">Dashboard preview</span>
+            <span class="badge badge-soft">Illustration</span>
+          </div>
+          <svg viewBox="0 0 400 140" class="w-100" role="img" aria-label="Illustrative line chart, not real market data">
+            <defs>
+              <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stop-color="#2dd4bf" stop-opacity=".35"/>
+                <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polygon fill="url(#g)" points="0,140 0,100 40,90 80,105 120,70 160,80 200,50 240,62 280,35 320,45 360,20 400,28 400,140"/>
+            <polyline fill="none" stroke="#2dd4bf" stroke-width="2.5"
+                      points="0,100 40,90 80,105 120,70 160,80 200,50 240,62 280,35 320,45 360,20 400,28"/>
+          </svg>
+          <div class="row g-2 mt-2 text-center">
+            <div class="col-4"><div class="mini-tile"><i class="bi bi-cpu"></i><div class="small">LSTM / GRU</div></div></div>
+            <div class="col-4"><div class="mini-tile"><i class="bi bi-heart-pulse"></i><div class="small">Health score</div></div></div>
+            <div class="col-4"><div class="mini-tile"><i class="bi bi-newspaper"></i><div class="small">Sentiment</div></div></div>
+          </div>
+          <p class="small text-muted-light mt-3 mb-0">Decorative graphic only. It does not show real prices or results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Markets / supported stocks -->
+<section id="markets" class="py-5">
+  <div class="container">
+    <h2 class="fw-bold mb-1">Supported NSE stocks</h2>
+    <p class="text-muted mb-4">
+      Ten large NSE companies are supported. Price data comes from a delayed / end-of-day source and is
+      <strong>not live</strong>. Latest prices, changes and charts are added in the next build step.
+    </p>
+    <div class="row g-3">
+      {% for s in stocks %}
+      <div class="col-sm-6 col-lg-4">
+        <div class="card stock-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <h3 class="h6 fw-bold mb-0">{{ s.name }}</h3>
+              <span class="badge text-bg-light">{{ s.symbol }}</span>
+            </div>
+            <p class="small text-muted mb-2">{{ s.sector }}</p>
+            <p class="small mb-0 text-muted"><i class="bi bi-clock-history me-1"></i>Price data: not loaded yet</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-5 bg-soft">
+  <div class="container">
+    <h2 class="fw-bold mb-4">Features</h2>
+    {% set features = [
+      ("bi-cpu", "Deep Learning Stock Prediction", "LSTM and GRU networks compared against Random Forest and XGBoost on a chronological test set."),
+      ("bi-heart-pulse", "Financial Health Analysis", "A transparent 0-100 score built from growth, margin, leverage and return metrics."),
+      ("bi-chat-dots", "AI Investment Assistant", "Ask questions in plain language. Answers are grounded in data retrieved by the backend."),
+      ("bi-newspaper", "News Sentiment Analysis", "FinBERT classifies financial headlines as positive, negative or neutral."),
+      ("bi-pie-chart", "Portfolio Risk Analysis", "Volatility, drawdown and correlation for a sample portfolio of supported stocks."),
+      ("bi-file-earmark-text", "Financial Report Summarization", "Upload annual reports and get summaries grounded in retrieved passages (RAG)."),
+      ("bi-lightbulb", "Explainable AI", "SHAP shows which features drove a tree-model forecast, with no invented explanations.")
+    ] %}
+    <div class="row g-4">
+      {% for icon, title, desc in features %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card feature-card h-100">
+          <div class="card-body">
+            <div class="feature-icon mb-3"><i class="bi {{ icon }}"></i></div>
+            <h3 class="h6 fw-bold">{{ title }}</h3>
+            <p class="small text-muted mb-0">{{ desc }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="fw-bold mb-4">How it works</h2>
+    <div class="row g-4">
+      {% for n, t, d in [
+        (1, "Create an account", "Sign up securely and open your personal dashboard."),
+        (2, "Pick a stock", "Choose from the ten supported NSE companies and a historical period."),
+        (3, "Run an analysis", "View indicators, model forecasts, financial health and news sentiment."),
+        (4, "Interpret with care", "Every forecast is experimental, shown with its evaluation metrics.")] %}
+      <div class="col-md-6 col-lg-3">
+        <div class="step-num">{{ n }}</div>
+        <h3 class="h6 fw-bold mt-2">{{ t }}</h3>
+        <p class="small text-muted">{{ d }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Technology and highlights -->
+<section id="about" class="py-5 bg-soft">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-6">
+        <h2 class="fw-bold mb-3">Technology stack</h2>
+        <div class="d-flex flex-wrap gap-2">
+          {% for t in ["Python", "Flask", "SQLAlchemy", "PostgreSQL", "scikit-learn", "XGBoost", "TensorFlow / Keras", "FinBERT", "LangChain", "ChromaDB / FAISS", "MLflow", "SHAP", "Docker", "GitHub Actions", "Bootstrap 5", "Chart.js"] %}
+          <span class="badge tech-badge">{{ t }}</span>
+          {% endfor %}
+        </div>
+        <p class="small text-muted mt-3">Components are added step by step. Not every item is active in the current build.</p>
+      </div>
+      <div class="col-lg-6">
+        <h2 class="fw-bold mb-3">Project highlights</h2>
+        <ul class="highlights">
+          <li>Chronological train / validation / test split, so there is no look-ahead leakage.</li>
+          <li>Scalers fitted on training data only.</li>
+          <li>Models trained offline and loaded for inference; they are never retrained on page load.</li>
+          <li>Missing data is shown as missing, never invented.</li>
+          <li>Passwords hashed, CSRF protection, rate-limited sign-in.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-5">
+  <div class="container" style="max-width:820px">
+    <h2 class="fw-bold mb-4">Frequently asked questions</h2>
+    <div class="accordion" id="faqAcc">
+      {% for q, a in [
+        ("Is the price data live?", "No. The data source provides delayed or end-of-day NSE data. The app labels it that way and does not claim real-time prices."),
+        ("Can the models predict tomorrow's price?", "No model can reliably do that. Forecasts are experimental, shown with error metrics, and must not be treated as guaranteed outcomes."),
+        ("Is this financial advice?", "No. FinSight AI is for educational and analytical purposes only and is not personalised professional advice."),
+        ("Which stocks are supported?", "Ten large NSE companies, listed in the Markets section above."),
+        ("Is my data private?", "Passwords are stored as salted hashes, and uploaded documents (in a later step) are visible only to the account that uploaded them.")] %}
+      <div class="accordion-item">
+        <h3 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ loop.index }}">{{ q }}</button>
+        </h3>
+        <div id="faq{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#faqAcc">
+          <div class="accordion-body">{{ a }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

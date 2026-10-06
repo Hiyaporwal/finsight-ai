@@ -1,0 +1,33 @@
+<footer class="fs-footer py-5 mt-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-5">
+        <h5 class="fw-bold"><i class="bi bi-graph-up-arrow text-accent me-1"></i>FinSight AI</h5>
+        <p class="small text-muted-light mb-0">
+          An educational data science and machine learning project for analysing NSE-listed stocks.
+          Forecasts and AI-generated insights are experimental and are not investment advice.
+        </p>
+      </div>
+      <div class="col-md-3">
+        <h6 class="text-uppercase small">Project</h6>
+        <ul class="list-unstyled small mb-0">
+          <li><a href="{{ url_for('main.index') }}#features">Features</a></li>
+          <li><a href="{{ url_for('main.index') }}#markets">Supported stocks</a></li>
+          <li><a href="{{ url_for('main.index') }}#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="text-uppercase small">Contact</h6>
+        <ul class="list-unstyled small mb-0">
+          <!-- Replace both links with your own details -->
+          <li><a href="mailto:your-email@example.com"><i class="bi bi-envelope me-1"></i>your-email@example.com</a></li>
+          <li><a href="https://github.com/" target="_blank" rel="noopener"><i class="bi bi-github me-1"></i>GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="border-secondary my-4">
+    <p class="small text-muted-light mb-0">
+      &copy; {{ now_year if now_year is defined else 2026 }} FinSight AI. For educational and analytical purposes only.
+    </p>
+  </div>
+</footer>

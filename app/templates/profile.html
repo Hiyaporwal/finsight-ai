@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width:640px">
+  <h1 class="h3 fw-bold mb-4">Your profile</h1>
+  <div class="card"><div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-4">Name</dt><dd class="col-sm-8">{{ user.full_name }}</dd>
+      <dt class="col-sm-4">Email</dt><dd class="col-sm-8">{{ user.email }}</dd>
+      <dt class="col-sm-4">Member since</dt><dd class="col-sm-8">{{ user.created_at.strftime('%d %b %Y') }}</dd>
+      <dt class="col-sm-4">Last sign-in</dt>
+      <dd class="col-sm-8">{{ user.last_login_at.strftime('%d %b %Y, %H:%M UTC') if user.last_login_at else 'N/A' }}</dd>
+    </dl>
+  </div></div>
+</div>
+{% endblock %}

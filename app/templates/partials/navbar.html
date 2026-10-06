@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-dark fs-navbar sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+      <i class="bi bi-graph-up-arrow text-accent me-1"></i>FinSight <span class="text-accent">AI</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}#markets">Markets</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}#about">About</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2">
+        {% if current_user.is_authenticated %}
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('main.profile') }}">Profile</a>
+          <form method="post" action="{{ url_for('auth.logout') }}" class="d-inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-accent btn-sm">Sign out</button>
+          </form>
+        {% else %}
+          <a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.signin') }}">Sign In</a>
+          <a class="btn btn-accent btn-sm" href="{{ url_for('auth.signup') }}">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>

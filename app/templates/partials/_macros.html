@@ -1,0 +1,26 @@
+{% macro field(f, autocomplete=none) %}
+<div class="mb-3">
+  {{ f.label(class="form-label") }}
+  {{ f(class="form-control" ~ (" is-invalid" if f.errors else ""), autocomplete=autocomplete) }}
+  {% for e in f.errors %}<div class="invalid-feedback d-block">{{ e }}</div>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro password_field(f, autocomplete="current-password", meter=false) %}
+<div class="mb-3">
+  {{ f.label(class="form-label") }}
+  <div class="input-group">
+    {{ f(class="form-control" ~ (" is-invalid" if f.errors else ""), autocomplete=autocomplete,
+         data_strength_source=("1" if meter else none)) }}
+    <button class="btn btn-outline-secondary" type="button" data-toggle-password
+            aria-label="Show or hide password"><i class="bi bi-eye"></i></button>
+  </div>
+  {% for e in f.errors %}<div class="invalid-feedback d-block">{{ e }}</div>{% endfor %}
+  {% if meter %}
+  <div class="progress mt-2" style="height:6px" aria-hidden="true">
+    <div id="strengthBar" class="progress-bar" role="progressbar" style="width:0%"></div>
+  </div>
+  <div id="strengthLabel" class="form-text">Use 8+ characters with upper and lower case letters and a digit.</div>
+  {% endif %}
+</div>
+{% endmacro %}
