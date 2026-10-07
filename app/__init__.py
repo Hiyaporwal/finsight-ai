@@ -42,6 +42,8 @@ def create_app(config_name=None):
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(stocks_bp)
+    from app.routes.predictions import predictions_bp
+    app.register_blueprint(predictions_bp)
 
     @app.errorhandler(404)
     def not_found(e):

@@ -77,17 +77,41 @@
       </div>
 
       <!-- Placeholder summary cards -->
-      <div class="row g-3 mt-2">
-        {% for t, d in [("Prediction summary","No predictions yet. Models are trained in Phase 2."),("Watchlist","Your watchlist is empty."),("Portfolio risk","No portfolio created yet.")] %}
+            <div class="row g-3 mt-2">
         <div class="col-md-4">
           <div class="card h-100">
             <div class="card-body">
-              <h2 class="h6 fw-bold">{{ t }}</h2>
-              <p class="small text-muted mb-0">{{ d }}</p>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h6 fw-bold mb-0">Prediction summary</h2>
+                <div class="d-flex gap-1">
+                  <select id="predHorizon" class="form-select form-select-sm" aria-label="Forecast horizon">
+                    <option value="1">Next session</option>
+                    <option value="5">Next 5 sessions</option>
+                  </select>
+                  <select id="predModel" class="form-select form-select-sm" aria-label="Model">
+                    <option value="xgboost">XGBoost</option>
+                    <option value="random_forest">Random Forest</option>
+                    <option value="lstm">LSTM</option>
+                    <option value="gru">GRU</option>
+                  </select>
+                </div>
+              </div>
+              <div id="predBox" class="small text-muted">Select a stock above to see its experimental forecast.</div>
             </div>
           </div>
         </div>
-        {% endfor %}
+        <div class="col-md-4">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 fw-bold">Watchlist</h2>
+            <p class="small text-muted mb-0">Your watchlist is empty.</p>
+          </div></div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 fw-bold">Portfolio risk</h2>
+            <p class="small text-muted mb-0">No portfolio created yet.</p>
+          </div></div>
+        </div>
       </div>
     </section>
 
@@ -98,4 +122,5 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/stocks.js') }}"></script>
+<script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
 {% endblock %}

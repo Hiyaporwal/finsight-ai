@@ -234,3 +234,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 >>>>>>> e915a595efe2fb0d1504a8a2169491bba4e779f2
+venv312/
+check_db.py
+check_xgb.py
