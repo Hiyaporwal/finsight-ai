@@ -13,7 +13,7 @@
         <a class="list-group-item list-group-item-action" href="{{ url_for('main.profile') }}">
           <i class="bi bi-person me-2"></i>Profile
         </a>
-        {% for label, icon in [("Predictions","bi-cpu"),("Financial health","bi-heart-pulse"),("News sentiment","bi-newspaper"),("Assistant","bi-chat-dots"),("Portfolio","bi-pie-chart"),("Reports","bi-file-earmark-text")] %}
+        {% for label, icon in [("Financial health","bi-heart-pulse"),("News sentiment","bi-newspaper"),("Assistant","bi-chat-dots"),("Portfolio","bi-pie-chart"),("Reports","bi-file-earmark-text")] %}
         <span class="list-group-item disabled">
           <i class="bi {{ icon }} me-2"></i>{{ label }} <small>(coming soon)</small>
         </span>
@@ -57,7 +57,7 @@
       </div>
       <p id="noMatch" class="text-muted d-none mt-3">No supported stock matches your search.</p>
 
-      <!-- Chart card -->
+      <!-- Price chart card -->
       <div class="card mt-4" id="chartCard">
         <div class="card-body">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
@@ -76,8 +76,8 @@
         </div>
       </div>
 
-      <!-- Placeholder summary cards -->
-            <div class="row g-3 mt-2">
+      <!-- Prediction summary, watchlist, portfolio -->
+      <div class="row g-3 mt-2">
         <div class="col-md-4">
           <div class="card h-100">
             <div class="card-body">
@@ -113,6 +113,30 @@
           </div></div>
         </div>
       </div>
+
+      <!-- Model comparison -->
+      <div class="card mt-4" id="compareCard">
+        <div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h2 class="h6 fw-bold mb-0" id="compareTitle">Model comparison</h2>
+            <select id="compareHorizon" class="form-select form-select-sm w-auto" aria-label="Horizon">
+              <option value="1">Next session</option>
+              <option value="5">Next 5 sessions</option>
+            </select>
+          </div>
+          <div id="compareInfo" class="small text-muted mb-2">Select a stock above to compare models.</div>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle d-none" id="compareTable">
+              <thead>
+                <tr><th>Model</th><th>MAE (INR)</th><th>RMSE (INR)</th><th>MAPE %</th><th>Direction %</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div style="position:relative;height:320px"><canvas id="compareChart"></canvas></div>
+          <p class="small fst-italic text-muted mt-2 mb-0" id="compareNote"></p>
+        </div>
+      </div>
     </section>
 
   </div>
@@ -123,4 +147,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/stocks.js') }}"></script>
 <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
+<script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
 {% endblock %}
