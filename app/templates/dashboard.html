@@ -4,12 +4,19 @@
 {% block content %}
 <div class="container-fluid py-4">
   <div class="row g-4">
+
     <aside class="col-lg-2">
       <div class="list-group sidebar">
-        <a class="list-group-item list-group-item-action active" href="{{ url_for('main.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-        <a class="list-group-item list-group-item-action" href="{{ url_for('main.profile') }}"><i class="bi bi-person me-2"></i>Profile</a>
+        <a class="list-group-item list-group-item-action active" href="{{ url_for('main.dashboard') }}">
+          <i class="bi bi-speedometer2 me-2"></i>Dashboard
+        </a>
+        <a class="list-group-item list-group-item-action" href="{{ url_for('main.profile') }}">
+          <i class="bi bi-person me-2"></i>Profile
+        </a>
         {% for label, icon in [("Predictions","bi-cpu"),("Financial health","bi-heart-pulse"),("News sentiment","bi-newspaper"),("Assistant","bi-chat-dots"),("Portfolio","bi-pie-chart"),("Reports","bi-file-earmark-text")] %}
-        <span class="list-group-item disabled"><i class="bi {{ icon }} me-2"></i>{{ label }} <small>(coming soon)</small></span>
+        <span class="list-group-item disabled">
+          <i class="bi {{ icon }} me-2"></i>{{ label }} <small>(coming soon)</small>
+        </span>
         {% endfor %}
       </div>
     </aside>
@@ -21,13 +28,18 @@
       <div class="row g-3 mb-4">
         <div class="col-md-6">
           <label for="stockSearch" class="form-label">Search supported stocks</label>
-          <input id="stockSearch" type="search" class="form-control" placeholder="e.g. Reliance, TCS, SBIN" autocomplete="off">
+          <input id="stockSearch" type="search" class="form-control"
+                 placeholder="e.g. Reliance, TCS, SBIN" autocomplete="off">
         </div>
       </div>
 
+      <!-- Stock cards -->
       <div class="row g-3" id="stockGrid">
         {% for s in stocks %}
-        <div class="col-sm-6 col-xl-4 stock-item" data-search="{{ (s.name ~ ' ' ~ s.symbol)|lower }}">
+        <div class="col-sm-6 col-xl-4 stock-item"
+             data-symbol="{{ s.symbol }}"
+             data-search="{{ (s.name ~ ' ' ~ s.symbol)|lower }}"
+             style="cursor:pointer">
           <div class="card stock-card h-100">
             <div class="card-body">
               <div class="d-flex justify-content-between">
@@ -35,7 +47,9 @@
                 <span class="badge text-bg-light">{{ s.symbol }}</span>
               </div>
               <p class="small text-muted mb-2">{{ s.sector }}</p>
-              <p class="small text-muted mb-0"><i class="bi bi-hourglass-split me-1"></i>Price and chart arrive in the next step</p>
+              <div class="price-box" data-symbol="{{ s.symbol }}">
+                <span class="small text-muted">Loading prices...</span>
+              </div>
             </div>
           </div>
         </div>
@@ -43,16 +57,45 @@
       </div>
       <p id="noMatch" class="text-muted d-none mt-3">No supported stock matches your search.</p>
 
+      <!-- Chart card -->
+      <div class="card mt-4" id="chartCard">
+        <div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h2 class="h6 fw-bold mb-0" id="chartTitle">Select a stock above to view its chart</h2>
+            <select id="periodSelect" class="form-select form-select-sm w-auto" aria-label="Historical period">
+              <option value="1mo">1 month</option>
+              <option value="3mo">3 months</option>
+              <option value="6mo">6 months</option>
+              <option value="1y" selected>1 year</option>
+              <option value="5y">5 years</option>
+            </select>
+          </div>
+          <div id="chartStatus" class="small text-muted mb-2" aria-live="polite"></div>
+          <div style="position:relative;height:320px"><canvas id="priceChart"></canvas></div>
+          <div id="ohlcv" class="row g-2 mt-3 small"></div>
+        </div>
+      </div>
+
+      <!-- Placeholder summary cards -->
       <div class="row g-3 mt-2">
         {% for t, d in [("Prediction summary","No predictions yet. Models are trained in Phase 2."),("Watchlist","Your watchlist is empty."),("Portfolio risk","No portfolio created yet.")] %}
         <div class="col-md-4">
-          <div class="card h-100"><div class="card-body">
-            <h2 class="h6 fw-bold">{{ t }}</h2><p class="small text-muted mb-0">{{ d }}</p>
-          </div></div>
+          <div class="card h-100">
+            <div class="card-body">
+              <h2 class="h6 fw-bold">{{ t }}</h2>
+              <p class="small text-muted mb-0">{{ d }}</p>
+            </div>
+          </div>
         </div>
         {% endfor %}
       </div>
     </section>
+
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/stocks.js') }}"></script>
 {% endblock %}

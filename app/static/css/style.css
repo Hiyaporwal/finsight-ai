@@ -43,3 +43,8 @@ a { color: var(--fs-accent-dark); }
 .sidebar .list-group-item.active { background: var(--fs-navy); border-color: var(--fs-navy); }
 
 :focus-visible { outline: 3px solid var(--fs-accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--fs-accent); outline-offset: 2px; }
+
+.up { color: #16a34a; font-weight: 600; }
+.down { color: #dc2626; font-weight: 600; }
+.stock-item.selected .stock-card { border-color: var(--fs-accent-dark); box-shadow: 0 0 0 2px rgba(20, 184, 166, .25); }

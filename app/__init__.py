@@ -38,8 +38,10 @@ def create_app(config_name=None):
     from app import models  # noqa: F401
     from app.routes.auth import auth_bp
     from app.routes.main import main_bp
+    from app.routes.stocks import stocks_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(stocks_bp)
 
     @app.errorhandler(404)
     def not_found(e):
