@@ -235,3 +235,137 @@ def comparison(symbol: str, horizon: int) -> dict:
                     for k, v in meta["metrics"].items()},
         "test_series": chart, "disclaimer": DISCLAIMER,
     }
+EXPLAINABLE = ("random_forest", "xgboost")
+FEATURE_HELP = {
+    "Open": "Opening price", "High": "Day high", "Low": "Day low", "Close": "Closing price",
+    "Volume": "Trading volume", "return_1d": "Latest 1-day return",
+    "sma_10": "10-day simple average price", "sma_20": "20-day simple average price",
+    "sma_50": "50-day simple average price", "ema_10": "10-day exponential average price",
+    "ema_20": "20-day exponential average price", "ema_50": "50-day exponential average price",
+    "rsi_14": "RSI (14-day momentum)", "macd": "MACD line", "macd_signal": "MACD signal line",
+    "macd_hist": "MACD histogram", "bb_mid": "Bollinger middle band",
+    "bb_upper": "Bollinger upper band", "bb_lower": "Bollinger lower band",
+    "bb_pctb": "Position inside Bollinger Bands", "bb_width": "Bollinger Band width",
+    "volatility_20": "20-day volatility",
+}
+
+
+def _explainer(symbol, horizon, model):
+    key = (symbol, horizon, "shap_explainer")
+    with _lock:
+        if key in _cache:
+            return _cache[key]
+    import shap
+    explainer = shap.TreeExplainer(model)
+    with _lock:
+        _cache[key] = explainer
+    return explainer
+
+
+def explain(symbol: str, horizon: int, kind: str, top_n: int = 6) -> dict:
+    if kind in DEEP_KEYS:
+        try:
+            return _explain_deep(symbol, horizon, kind, top_n)
+        except PredictionError:
+            raise
+        except Exception as exc:
+            log.exception("Deep explanation failed for %s h%s %s", symbol, horizon, kind)
+            raise PredictionError(f"Explanation failed: {exc}", 500)
+    if kind not in EXPLAINABLE:
+        raise PredictionError("Unknown model", 400)
+    _load_bundle(symbol, horizon)  # validates symbol, horizon and artifacts
+    res = market_data.get_history(symbol, "5y")
+    if not res.ok:
+        raise PredictionError(f"Could not load recent prices: {res.error}", 502)
+    feats = build_features(res.data).dropna(subset=FEATURE_COLUMNS)
+    if feats.empty:
+        raise PredictionError("Not enough recent history to compute indicators", 502)
+    row = feats[FEATURE_COLUMNS].tail(1)
+    model = _load_model(symbol, horizon, kind)
+
+    try:
+        if kind == "xgboost":
+            import xgboost as xgb
+            contrib = model.get_booster().predict(xgb.DMatrix(row), pred_contribs=True)[0]
+            values, base = np.asarray(contrib[:-1], float), float(contrib[-1])
+        else:
+            explainer = _explainer(symbol, horizon, model)
+            values = np.asarray(explainer.shap_values(row, check_additivity=False)[0], float)
+            base = float(np.ravel(explainer.expected_value)[0])
+    except PredictionError:
+        raise
+    except Exception as exc:
+        log.exception("Explanation failed for %s h%s %s", symbol, horizon, kind)
+        raise PredictionError(f"Explanation failed: {exc}", 500)
+
+    predicted = base + float(values.sum())
+    order = np.argsort(-np.abs(values))
+    top = []
+    for i in order[:top_n]:
+        name = FEATURE_COLUMNS[i]
+        top.append({
+            "feature": name, "label": FEATURE_HELP.get(name, name),
+            "value": float(row.iloc[0][name]),
+            "contribution_pct_points": float(values[i] * 100),
+            "direction": "up" if values[i] >= 0 else "down",
+        })
+    rest = float(values[order[top_n:]].sum() * 100) if len(order) > top_n else 0.0
+    return {
+        "symbol": symbol, "model": kind, "horizon_sessions": horizon,
+        "as_of": feats.index[-1].strftime("%Y-%m-%d"),
+        "base_return_pct": base * 100,
+        "predicted_return_pct": predicted * 100,
+        "top_features": top, "other_features_pct_points": rest,
+        "note": ("SHAP values describe how this trained model reached its forecast. They do not "
+                 "prove that a feature causes price moves. Contributions are in percentage "
+                 "points of predicted return."),
+        "disclaimer": DISCLAIMER,
+    }
+def _explain_deep(symbol, horizon, kind, top_n=6):
+    bundle = _load_bundle(symbol, horizon)
+    mm = bundle["meta"]["metrics"].get(kind)
+    if mm is None:
+        raise PredictionError(f"{kind} was not trained for {symbol} h{horizon}", 404)
+    res = market_data.get_history(symbol, "5y")
+    if not res.ok:
+        raise PredictionError(f"Could not load recent prices: {res.error}", 502)
+    feats = build_features(res.data).dropna(subset=FEATURE_COLUMNS)
+    seq_len = int(mm["seq_len"])
+    if len(feats) < seq_len:
+        raise PredictionError("Not enough recent history for the model window", 502)
+    model = _load_model(symbol, horizon, kind)
+
+    window = bundle["scaler"].transform(feats[FEATURE_COLUMNS].tail(seq_len))  # (seq_len, n_features)
+    n = window.shape[1]
+    batch = [window.copy(), np.zeros_like(window)]      # original, all features at training mean
+    for i in range(n):
+        w = window.copy()
+        w[:, i] = 0.0                                   # scaled 0 = training average
+        batch.append(w)
+    out = model.predict(np.stack(batch), verbose=0).ravel() * mm["target_sd"] + mm["target_mu"]
+    original, neutral, ablated = float(out[0]), float(out[1]), out[2:]
+    effects = original - ablated                        # forecast change caused by each feature
+
+    order = np.argsort(-np.abs(effects))
+    last_row = feats[FEATURE_COLUMNS].iloc[-1]
+    top = []
+    for i in order[:top_n]:
+        name = FEATURE_COLUMNS[i]
+        top.append({
+            "feature": name, "label": FEATURE_HELP.get(name, name),
+            "value": float(last_row[name]),
+            "contribution_pct_points": float(effects[i] * 100),
+            "direction": "up" if effects[i] >= 0 else "down",
+        })
+    return {
+        "symbol": symbol, "model": kind, "horizon_sessions": horizon,
+        "as_of": feats.index[-1].strftime("%Y-%m-%d"),
+        "method": "Feature ablation (not SHAP)",
+        "base_return_pct": neutral * 100,
+        "predicted_return_pct": original * 100,
+        "top_features": top, "other_features_pct_points": 0.0,
+        "note": ("Each bar shows how much the forecast changes when that feature is replaced by its "
+                 "training average over the whole input window. Effects overlap and do not add up "
+                 "exactly to the forecast. This describes the model's behaviour, not market causes."),
+        "disclaimer": DISCLAIMER,
+    }

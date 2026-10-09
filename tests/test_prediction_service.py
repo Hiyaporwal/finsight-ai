@@ -62,3 +62,16 @@ def test_bad_horizon_and_model(bundle):
         ps.forecast("TEST.NS", 3, "random_forest")
     with pytest.raises(ps.PredictionError):
         ps.forecast("TEST.NS", 1, "magic")
+
+
+def test_explanation_adds_up_to_prediction(bundle):
+    ex = ps.explain("TEST.NS", 1, "random_forest", top_n=22)
+    fc = ps.forecast("TEST.NS", 1, "random_forest")
+    total = ex["base_return_pct"] + sum(f["contribution_pct_points"] for f in ex["top_features"])
+    assert total == pytest.approx(fc["predicted_change_pct"], abs=1e-6)
+
+
+def test_deep_models_not_explained(bundle):
+    with pytest.raises(ps.PredictionError) as e:
+        ps.explain("TEST.NS", 1, "lstm")
+    assert e.value.status == 400

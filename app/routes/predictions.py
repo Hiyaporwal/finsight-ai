@@ -46,3 +46,22 @@ def comparison(symbol, horizon):
         return jsonify(ps.comparison(symbol, horizon))
     except ps.PredictionError as e:
         return jsonify(error=str(e)), e.status
+
+
+@predictions_bp.route("/<symbol>/<int:horizon>/explain")
+@limiter.limit("20 per minute")
+def explain(symbol, horizon):
+    bad = _validate(symbol)
+    if bad:
+        return bad
+    kind = request.args.get("model", "xgboost")
+    try:
+        return jsonify(ps.explain(symbol, horizon, kind))
+    except ps.PredictionError as e:
+        return jsonify(error=str(e)), e.status
+    except Exception:
+        from flask import current_app
+        current_app.logger.exception("Explain failed")
+        return jsonify(error="Unexpected server error. Check the server log."), 500
+
+    

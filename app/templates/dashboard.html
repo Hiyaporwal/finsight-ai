@@ -57,7 +57,7 @@
       </div>
       <p id="noMatch" class="text-muted d-none mt-3">No supported stock matches your search.</p>
 
-      <!-- Price chart card -->
+      <!-- Price chart -->
       <div class="card mt-4" id="chartCard">
         <div class="card-body">
           <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
@@ -137,6 +137,15 @@
           <p class="small fst-italic text-muted mt-2 mb-0" id="compareNote"></p>
         </div>
       </div>
+
+      <!-- SHAP explanation -->
+      <div class="card mt-4" id="explainCard">
+        <div class="card-body">
+          <h2 class="h6 fw-bold mb-1">Why this forecast? (SHAP for tree models, feature ablation for LSTM/GRU)</h2>
+          <div class="small text-muted mb-2">Uses the horizon and model chosen in the Prediction summary card.</div>
+          <div id="explainBox" class="small text-muted">Select a stock above.</div>
+        </div>
+      </div>
     </section>
 
   </div>
@@ -148,4 +157,5 @@
 <script src="{{ url_for('static', filename='js/stocks.js') }}"></script>
 <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
+<script src="{{ url_for('static', filename='js/explain.js') }}"></script>
 {% endblock %}
