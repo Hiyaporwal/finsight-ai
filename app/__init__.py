@@ -41,11 +41,13 @@ def create_app(config_name=None):
     from app.routes.stocks import stocks_bp
     from app.routes.predictions import predictions_bp
     from app.routes.financial_analysis import financial_bp      # <-- add
+    from app.routes.sentiment import sentiment_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(stocks_bp)
     app.register_blueprint(predictions_bp)
-    app.register_blueprint(financial_bp)                         # <-- add
+    app.register_blueprint(financial_bp)
+    app.register_blueprint(sentiment_bp)                         # <-- add
 
     @app.errorhandler(404)
     def not_found(e):
@@ -74,5 +76,12 @@ def create_app(config_name=None):
                 added += 1
         db.session.commit()
         print(f"Seeded {added} new stocks.")
+
+    @app.cli.command("warm-finbert")
+    def warm_finbert():
+        """Download and test FinBERT once (about 400 MB)."""
+        from app.services.sentiment_service import FinBERTClassifier
+        out = FinBERTClassifier().classify(["The company reported record profits."])
+        print("FinBERT ready:", out[0]["label"], round(out[0]["score"], 3))
 
     return app

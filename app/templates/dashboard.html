@@ -153,6 +153,13 @@
           <div id="finBox" class="small text-muted">Select a stock above.</div>
         </div>
       </div>
+            <!-- News sentiment -->
+      <div class="card mt-4" id="sentCard">
+        <div class="card-body">
+          <h2 class="h6 fw-bold mb-2">News sentiment (FinBERT)</h2>
+          <div id="sentBox" class="small text-muted">Select a stock above.</div>
+        </div>
+      </div>
     </section>
 
   </div>
@@ -166,4 +173,5 @@
 <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
 <script src="{{ url_for('static', filename='js/explain.js') }}"></script>
 <script src="{{ url_for('static', filename='js/financial.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sentiment.js') }}"></script>
 {% endblock %}

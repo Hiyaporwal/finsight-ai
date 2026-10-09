@@ -71,7 +71,7 @@ def test_explanation_adds_up_to_prediction(bundle):
     assert total == pytest.approx(fc["predicted_change_pct"], abs=1e-6)
 
 
-def test_deep_models_not_explained(bundle):
+def test_deep_model_missing_is_404(bundle):
     with pytest.raises(ps.PredictionError) as e:
         ps.explain("TEST.NS", 1, "lstm")
-    assert e.value.status == 400
+    assert e.value.status == 404

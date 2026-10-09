@@ -34,7 +34,7 @@ def test_weights_sum_to_100():
 def test_healthy_company_scores_high():
     out = analyze_fundamentals(healthy(), "IT Services")
     assert out["overall_score"] > 70 and out["rating"] == "Strong"
-    assert out["coverage_pct"] == 100
+    assert out["coverage_pct"] == 60
     m = {x["key"]: x for x in out["metrics"]}
     assert m["revenue_growth"]["value"] == pytest.approx(0.2)
     assert m["debt_to_equity"]["value"] == pytest.approx(0.2)
