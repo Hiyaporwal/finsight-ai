@@ -37,11 +37,17 @@ def create_app(config_name=None):
     csrf.init_app(app)
     limiter.init_app(app)
 
-    from app import models  # noqa: F401  (register tables)
+    from app import models  # noqa: F401
     from app.routes.auth import auth_bp
     from app.routes.main import main_bp
+    from app.routes.stocks import stocks_bp
+    from app.routes.predictions import predictions_bp
+    from app.routes.financial_analysis import financial_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(stocks_bp)
+    app.register_blueprint(predictions_bp)
+    app.register_blueprint(financial_bp)
 
     @app.errorhandler(404)
     def not_found(e):

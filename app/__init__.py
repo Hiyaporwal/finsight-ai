@@ -39,11 +39,13 @@ def create_app(config_name=None):
     from app.routes.auth import auth_bp
     from app.routes.main import main_bp
     from app.routes.stocks import stocks_bp
+    from app.routes.predictions import predictions_bp
+    from app.routes.financial_analysis import financial_bp      # <-- add
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(stocks_bp)
-    from app.routes.predictions import predictions_bp
     app.register_blueprint(predictions_bp)
+    app.register_blueprint(financial_bp)                         # <-- add
 
     @app.errorhandler(404)
     def not_found(e):

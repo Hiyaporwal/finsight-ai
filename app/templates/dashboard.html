@@ -13,7 +13,7 @@
         <a class="list-group-item list-group-item-action" href="{{ url_for('main.profile') }}">
           <i class="bi bi-person me-2"></i>Profile
         </a>
-        {% for label, icon in [("Financial health","bi-heart-pulse"),("News sentiment","bi-newspaper"),("Assistant","bi-chat-dots"),("Portfolio","bi-pie-chart"),("Reports","bi-file-earmark-text")] %}
+       {% for label, icon in [("News sentiment","bi-newspaper"),("Assistant","bi-chat-dots"),("Portfolio","bi-pie-chart"),("Reports","bi-file-earmark-text")] %}
         <span class="list-group-item disabled">
           <i class="bi {{ icon }} me-2"></i>{{ label }} <small>(coming soon)</small>
         </span>
@@ -146,6 +146,13 @@
           <div id="explainBox" class="small text-muted">Select a stock above.</div>
         </div>
       </div>
+            <!-- Financial health -->
+      <div class="card mt-4" id="finCard">
+        <div class="card-body">
+          <h2 class="h6 fw-bold mb-2">Financial health</h2>
+          <div id="finBox" class="small text-muted">Select a stock above.</div>
+        </div>
+      </div>
     </section>
 
   </div>
@@ -158,4 +165,5 @@
 <script src="{{ url_for('static', filename='js/predictions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
 <script src="{{ url_for('static', filename='js/explain.js') }}"></script>
+<script src="{{ url_for('static', filename='js/financial.js') }}"></script>
 {% endblock %}
